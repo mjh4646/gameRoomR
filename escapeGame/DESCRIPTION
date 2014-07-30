@@ -1,0 +1,10 @@
+Package: escapeGame
+Type: Package
+Title: Escape Game
+Version: 0.1
+Date: 2012-5-21
+Author: Mike Higgins
+Maintainer: Mike Higgins <mikehiggins83@gmail.com>
+Description: Escape game
+License: GPL (>= 2)
+LazyLoad: yes
