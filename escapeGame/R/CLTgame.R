@@ -1,6 +1,6 @@
-#### This is the interpreter escape game package. 
+#### This is the interpreter escape game package CLT game. 
 #### Created by Mike Higgins
-#### Modified by Brad Luen 7/28/14
+#### Modified by Brad Luen 7/31/14
 
 #### This function will eventually be used to 
 #### Update which location we are in.
