@@ -10,12 +10,6 @@ updateInterpreter = function(gameState){
 	#The init is helpful to determine if we have initialized a given location
 	if(is.null(gameState$FirstRoom$Init)){
 		
-		#Need to check if door is locked or unlocked
-		gameState$FirstRoom$DoorUnlocked = FALSE
-		
-		#Need to check to see if the safe is locked or unlocked
-		gameState$FirstRoom$SafeUnlocked = FALSE
-		
 		#Some intro words:
 		cat("Welcome to the\nStatistical Testing and Proficiency System (STAPS).\nYou are in a small room. Your task is to escape.\nTo view the room, type look().\nTo look at an object, type look(\"OBJECT NAME\")\nwhere \"OBJECT NAME\" is replaced with the name of the object.\nTo use an object, type use(\"OBJECT NAME\").\n")
 		
@@ -100,13 +94,7 @@ getLook = function(gameState, obj){
 	}
 	
 	else if(obj == "doorFirstRoom"){
-		
-		if(gameState$FirstRoom$DoorUnlocked){
-			cat("This is the door to the outside world.  It is currently unlocked.\n")
-		}
-		else{
-			cat("This is the door to the outside world.  It is currently locked.\nA panel reads 'TO OPEN, DISPLAY AN (APPROXIMATELY) NORMAL DISTRIBUTION ON THE SCREEN.'\n")
-		}
+		cat("This is the door to the outside world.  It is currently closed.\nA panel reads 'TO OPEN, DISPLAY AN (APPROXIMATELY) NORMAL DISTRIBUTION ON THE SCREEN.'\n")
 	}	
 	else if(obj == "switchFirstRoom"){
         tempState = get("gameState", myE)
@@ -178,8 +166,10 @@ useInterpreter = function(gameState,obj){
             print("The door doesn't open. You're going to need a lot more samples.")
         } else if(shapiro.test(tempState$Means)$stat > 0.95){
             cat("The distribution of sample means is approximately normal.\n The door opens and you escape into the outside world. You win! (trumpets)\n")
-        } else {
-            print("The door doesn't open. Try taking a few more samples.")
+            plot(0:1,0:1,type="n",xlab="",ylab="",xaxt="n",yaxt="n")
+            text(0.5,0.5,"You win!",cex=5)
+       } else {
+            print("Hmmm, not sure what the distribution is yet. Try taking a few more samples.")
         }
 	} else if(is.null(obj)){
 		
@@ -189,13 +179,27 @@ useInterpreter = function(gameState,obj){
 	}
 }
 
-enterInterpreter = function(gameState,number){
-	unlock(gameState, number)
-}
+#enterInterpreter = function(gameState,number){
+#	unlock(gameState, number)
+#}
 
 lookInterpreter = function(gameState,obj){
 	myObj = getObjName(gameState,obj)
 	getLook(gameState, myObj)
+}
+
+open = function(obj = "Door"){
+    if(obj == "Door"){
+        use("Door")
+    } else {
+        print("You can't open that.")
+    }
+}
+
+
+endGame = function(){
+    rm(myE)
+    dev.off()
 }
 
 
