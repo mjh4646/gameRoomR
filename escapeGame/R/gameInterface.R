@@ -40,6 +40,7 @@ myE = new.env()
 
 #Start game functions
 startGame = function(){
+
 	#Ignore this
 	# myGS =  mget("gameState", envir = myE, ifnotfound = "NotFound")
 	# if(myGS$gameState == "NotFound"){
@@ -71,6 +72,15 @@ startgame = function(){
 #	print(filename)
 #}
 
+endGame = function(){
+    rm(myE)
+    dev.off()
+}
+
+endgame = function()
+	endGame()
+}
+
 instructions = function(){
 	?instructions
 }
@@ -81,16 +91,16 @@ inventory = function(){
 }
 
 #Use functions
-use = function(obj = NULL){
+use = function(obj = NULL, rep = 1){
 	gameState = get("gameState", myE)
-	useInterpreter(gameState, obj)
+	useInterpreter(gameState, obj, rep)
 }
 
-useobj = function(obj = NULL){
+useobj = function(obj = NULL, rep = 1){
 	use(obj)
 }
 
-useObj = function(obj = NULL){
+useObj = function(obj = NULL, rep = 1){
 	use(obj)
 }
 
