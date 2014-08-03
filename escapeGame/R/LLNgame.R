@@ -1,6 +1,6 @@
 #### Interpreter escape game package: The LLN room
 #### Mike Higgins & Brad Luen
-#### Last modified 8/31/14
+#### Last modified 8/3/14
 
 #### This function will eventually be used to 
 #### Update which location we are in.
@@ -10,8 +10,10 @@ updateInterpreter = function(gameState){
 	#The init is helpful to determine if we have initialized a given location
 	if(is.null(gameState$FirstRoom$Init)){
 		
-		#Some intro words:
-		cat("Welcome to the Statistical Testing and Proficiency System (STAPS).\nYou are in a small room. Your task is to escape.\nTo view the room, type look().\nTo look at an object, type look(\"OBJECT NAME\")\nwhere \"OBJECT NAME\" is replaced with the name of the object.\nTo use an object, type use(\"OBJECT NAME\").\n")
+		# ID entry
+		cat("Welcome to the Statistical Testing and Proficiency System (STAPS).\nPlease enter your student ID and press enter.\n")
+		gameState$SID = as.numeric(readline(prompt = "Student ID: "))
+		cat("You are in a small room. Your task is to escape.\nTo view the room, type look().\nTo look at an object, type look(\"OBJECT NAME\")\nwhere \"OBJECT NAME\" is replaced with the name of the object.\nTo use an object, type use(\"OBJECT NAME\").\n")
 		
 		#We initialized the first room.  
 		#So we set this equal to true
@@ -84,13 +86,13 @@ getLook = function(gameState, obj){
         } else if(gameState$Switch==FALSE){
             plot(gameState$Data, main="One set of coins", xlab="",ylab="Heads",ylim=c(0,1),yaxt="n")
 			axis(2,at=c(0,1))
-            abline(h=0.47, lty=3, col="pink")
-            abline(h=0.53, lty=3, col="pink")
+            abline(h=0.47, lty=3, col="red")
+            abline(h=0.53, lty=3, col="red")
             print(paste("The screen shows the results of one set of", length(gameState$Data),"tosses."))
         } else {
             plot(gameState$Means*100, main="1,000 sets of coins", xlab="Set number", ylab="Percentage of heads",ylim=c(0,100),cex=0.7)
-            abline(h=47, lty=3, col="pink")
-            abline(h=53, lty=3, col="pink")
+            abline(h=47, lty=3, col="red")
+            abline(h=53, lty=3, col="red")
             print(paste("The screen shows the percentage of heads for 1,000 sets of tosses."))
         }
 	}
@@ -160,7 +162,7 @@ toss = function(coins){
     look("Screen")
 }
 
-useInterpreter = function(gameState,obj){
+useInterpreter = function(gameState,obj,rep=1){
 	myObj = getObjName(gameState,obj)
 	if(obj == "Button"){
         coins = readline("How many coins would you like to toss at a time?\n")
@@ -184,15 +186,15 @@ useInterpreter = function(gameState,obj){
         } else {
             prop = mean(tempState$Means <= 0.53) - mean(tempState$Means <= 0.47)
             if(prop >= 0.935 && prop <= 0.965){
-                cat(paste(100*prop,"percent of the dots are within the dotted lines.\n The door opens and you escape into the outside world.\n You win! (trumpets)\n"))
+                cat(paste(100*prop,"percent of the dots are within the dotted lines.\n The door opens and you escape into the outside world.\n You win! (trumpets)\n Your completion code is:",tempState$SID %% 12345,"\n"))
                 plot(0:1,0:1,type="n",xlab="",ylab="",xaxt="n",yaxt="n")
-                text(0.5,0.5,"You win!",cex=5)
+                text(0.5,0.5,"You win!",cex=4)
             } else {
                 cat(paste(100*prop,"percent of the dots are within the dotted lines.\n You need 95%. Keep trying!\n"))
             }
         }
 	} else if(is.null(obj)){
-		
+		cat(paste("To use an object, type use(\"NAME\"), where NAME is the name of the object.\n"))
 	}
 	else{
 		print(paste("You cannot use the object ", obj))
@@ -215,11 +217,5 @@ open = function(obj = "Door"){
         print("You can't open that.")
     }
 }
-
-endGame = function(){
-    rm(myE)
-    dev.off()
-}
-
 
 
