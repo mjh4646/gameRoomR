@@ -1,6 +1,6 @@
 #### Interpreter escape game package: The LLN room
 #### Mike Higgins & Brad Luen
-#### Last modified 7/31/14
+#### Last modified 8/31/14
 
 #### This function will eventually be used to 
 #### Update which location we are in.
@@ -10,14 +10,8 @@ updateInterpreter = function(gameState){
 	#The init is helpful to determine if we have initialized a given location
 	if(is.null(gameState$FirstRoom$Init)){
 		
-		#Need to check if door is locked or unlocked
-		gameState$FirstRoom$DoorUnlocked = FALSE
-		
-		#Need to check to see if the safe is locked or unlocked
-		gameState$FirstRoom$SafeUnlocked = FALSE
-		
 		#Some intro words:
-		cat("Welcome to the\nStatistical Testing and Proficiency System (STAPS).\nYou are in a small room. Your task is to escape.\nTo view the room, type look().\nTo look at an object, type look(\"OBJECT NAME\")\nwhere \"OBJECT NAME\" is replaced with the name of the object.\nTo use an object, type use(\"OBJECT NAME\").\n")
+		cat("Welcome to the Statistical Testing and Proficiency System (STAPS).\nYou are in a small room. Your task is to escape.\nTo view the room, type look().\nTo look at an object, type look(\"OBJECT NAME\")\nwhere \"OBJECT NAME\" is replaced with the name of the object.\nTo use an object, type use(\"OBJECT NAME\").\n")
 		
 		#We initialized the first room.  
 		#So we set this equal to true
@@ -31,7 +25,7 @@ initInterpreter = function(){
 	
 	#Initialize gameState
 	gameState = list()
-	gameState$Location = "FirstRoom"
+	gameState$Location = "LLNRoom"
 	gameState$Inventory = NULL
 	gameState$Data = c()
 	gameState$Means = c()
@@ -48,7 +42,7 @@ initInterpreter = function(){
 
 getLook = function(gameState, obj){
 
-	if(obj == "FirstRoom"){
+	if(obj == "LLNRoom"){
         par(mfrow=c(1,1))
 		myMap = list()
 		myMap$x = c(0,3,17,20,0,NA,
@@ -84,36 +78,31 @@ getLook = function(gameState, obj){
 		cat("In front of you, you see a Door, a Screen, a Switch, and a Button.\n")
 	}
 	
-	else if(obj == "screenFirstRoom"){
+	else if(obj == "screenLLNRoom"){
 		if(length(gameState$Data) == 0){
 			print("The screen is blank. I wonder what the button does?")
         } else if(gameState$Switch==FALSE){
-            plot(gameState$Data, main="One set of coins", xlab="",ylab="Heads",ylim=c(0,1))
-            abline(h=0.47, lty=3)
-            abline(h=0.53, lty=3)
+            plot(gameState$Data, main="One set of coins", xlab="",ylab="Heads",ylim=c(0,1),yaxt="n")
+			axis(2,at=c(0,1))
+            abline(h=0.47, lty=3, col="pink")
+            abline(h=0.53, lty=3, col="pink")
             print(paste("The screen shows the results of one set of", length(gameState$Data),"tosses."))
         } else {
             plot(gameState$Means*100, main="1,000 sets of coins", xlab="Set number", ylab="Percentage of heads",ylim=c(0,100),cex=0.7)
-            abline(h=47, lty=3)
-            abline(h=53, lty=3)
+            abline(h=47, lty=3, col="pink")
+            abline(h=53, lty=3, col="pink")
             print(paste("The screen shows the percentage of heads for 1,000 sets of tosses."))
         }
 	}
 
-	else if(obj == "buttonFirstRoom"){
+	else if(obj == "buttonLLNRoom"){
 		cat("There is a panel with one button on it.\nAn inscription reads: 'To toss 5 coins, type toss(5).\n")
 	}
 	
-	else if(obj == "doorFirstRoom"){
-		
-		if(gameState$FirstRoom$DoorUnlocked){
-			cat("This is the door to the outside world.  It is currently unlocked.\n")
-		}
-		else{
-			cat("This is the door to the outside world.  It is currently locked.\nA panel reads 'TO OPEN, GET (ABOUT) 95% OF THE DOTS WITHIN THE DASHED LINES.'\n")
-		}
+	else if(obj == "doorLLNRoom"){
+		cat("This is the door to the outside world.  It is currently closed.\nA panel reads 'TO OPEN, GET (ABOUT) 95% OF THE DOTS WITHIN THE DASHED LINES.'\n")
 	}	
-	else if(obj == "switchFirstRoom"){
+	else if(obj == "switchLLNRoom"){
         tempState = get("gameState", myE)
         if(tempState$Switch==FALSE){
             cat("There is a switch with two settings: '1' and '1000'.\nIt is currently set to '1'.\nTo flick the switch, type use(\"Switch\").\n")
@@ -131,14 +120,6 @@ getLook = function(gameState, obj){
 	}
 }
 
-unlock = function(gameState,number){
-    if(gameState$Password == number){
-    	print("The door opens, and you walk through. You are free. You're blinded by tears of joy, which prevent you from seeing the bus that crashes into you.")
-    }
-    else{
-    	print("A sad trombone plays. Try again.")
-    }
-}
 
 
 
@@ -218,9 +199,9 @@ useInterpreter = function(gameState,obj){
 	}
 }
 
-enterInterpreter = function(gameState,number){
-	unlock(gameState, number)
-}
+#enterInterpreter = function(gameState,number){
+#	unlock(gameState, number)
+#}
 
 lookInterpreter = function(gameState,obj){
 	myObj = getObjName(gameState,obj)
