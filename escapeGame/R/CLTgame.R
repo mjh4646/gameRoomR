@@ -1,6 +1,6 @@
-#### Interpreter escape game package: The LLN room
+#### Interpreter escape game package: The CLT room
 #### Mike Higgins & Brad Luen
-#### Last modified 8/1/14
+#### Last modified 8/3/14
 
 #### This function will eventually be used to 
 #### Update which location we are in.
@@ -10,8 +10,9 @@ updateInterpreter = function(gameState){
 	#The init is helpful to determine if we have initialized a given location
 	if(is.null(gameState$FirstRoom$Init)){
 		
-		#Some intro words:
-		cat("Welcome to the\nStatistical Testing and Proficiency System (STAPS).\nYou are in a small room. Your task is to escape.\nTo view the room, type look().\nTo look at an object, type look(\"OBJECT NAME\")\nwhere \"OBJECT NAME\" is replaced with the name of the object.\nTo use an object, type use(\"OBJECT NAME\").\n")
+		cat("Welcome to the Statistical Testing and Proficiency System (STAPS).\nPlease enter your student ID and press enter.\n")
+		gameState$SID = as.numeric(readline(prompt = "Student ID: "))
+		cat("You are in a small room. Your task is to escape.\nTo view the room, type look().\nTo look at an object, type look(\"OBJECT NAME\")\nwhere \"OBJECT NAME\" is replaced with the name of the object.\nTo use an object, type use(\"OBJECT NAME\").\n")
 		
 		#We initialized the first room.  
 		#So we set this equal to true
@@ -137,42 +138,53 @@ getObjName = function(gameState,obj){
 	}
 }
 
-useInterpreter = function(gameState,obj){
+useInterpreter = function(gameState,obj,rep=1){
 	myObj = getObjName(gameState,obj)
+    tempState = get("gameState", myE)
 	if(obj == "Button"){
-        tempState = get("gameState", myE)
-        tempState$Data = rexp(100)
-        cat(paste("You pushed the button. \nOne hundred data points fly across the room and into the screen.\n Their mean is", round(mean(tempState$Data),3),".\n"))
-        tempState$Means = c(tempState$Means, mean(tempState$Data))
-        assign("gameState",tempState,myE)
-        look("Screen")
+ 		if(rep < 2){
+			tempState$Data = rexp(100)
+			tempState$Means = c(tempState$Means, mean(tempState$Data))
+			cat(paste("You pushed the button. \nOne hundred data points fly across the room and into the screen.\n Their mean is", round(mean(tempState$Data),3),".\n"))
+		} else {
+			rep = floor(rep)
+			temp_results = matrix(rexp(100*rep),100,rep)
+			temp_means = apply(temp_results,2,"mean")
+			tempState$Data = temp_results[,rep]
+			tempState$Means = c(tempState$Means, temp_means)
+			cat(paste("You pushed the button",rep,"times. \nEach time, one hundred data points fly across the room and into the screen.\n The sample means are:", round(mean(temp_means),3),".\n"))
+		}
+		assign("gameState",tempState,myE)
+		look("Screen")			
 	} else if(obj == "Switch"){
-        tempState = get("gameState", myE)
         if(tempState$Switch == FALSE){
             tempState$Switch = TRUE
             print("You flick the switch to the setting 'Means'.")
-            assign("gameState",tempState,myE)
         } else if(tempState$Switch == TRUE){
             tempState$Switch = FALSE
             print("You flick the switch to the setting 'Data'.")
-            assign("gameState",tempState,myE)
         }
+		assign("gameState",tempState,myE)
         look("Screen")
     } else if(obj == "Door"){
-        tempState = get("gameState", myE)
         if(tempState$Switch==FALSE){
             print("Looks like an exponential distribution to me.")
         } else if(length(tempState$Means) < 5){
             print("The door doesn't open. You're going to need a lot more samples.")
         } else if(shapiro.test(tempState$Means)$stat > 0.95){
-            cat("The distribution of sample means is approximately normal.\n The door opens and you escape into the outside world. You win! (trumpets)\n")
+            cat(paste("The distribution of sample means is approximately normal.\n The door opens and you escape into the outside world. You win! (trumpets)\n"))
             plot(0:1,0:1,type="n",xlab="",ylab="",xaxt="n",yaxt="n")
-            text(0.5,0.5,"You win!",cex=5)
-       } else {
-            print("Hmmm, not sure what the distribution is yet. Try taking a few more samples.")
+            text(0.5,0.5,"You win!",cex=4)
+			code = tempState$SID %% 23456
+			cat(paste("Your completion code is:",code,"\n"))
+        } else {
+            print("Hmmm, can't be sure it's normal yet. Try taking a few more samples.")
+			if(length(tempState$Means) >= 10){
+				cat(paste("Psst... Here's a secret. Type use(\"Button\", 10) to use the button ten times.\n"))
+			}
         }
 	} else if(is.null(obj)){
-		
+		cat(paste("To use an object, type use(\"NAME\"), where NAME is the name of the object.\n"))
 	}
 	else{
 		print(paste("You cannot use the object ", obj))
@@ -194,12 +206,6 @@ open = function(obj = "Door"){
     } else {
         print("You can't open that.")
     }
-}
-
-
-endGame = function(){
-    rm(myE)
-    dev.off()
 }
 
 
