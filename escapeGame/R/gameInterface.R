@@ -3,6 +3,7 @@ library(maps)
 #### This is the game interface for R
 #### All games created will use this interface
 #### Created by Mike Higgins
+#### Modified by Brad Luen 8/3/14
 ####  
 #### Game interface needs the following:
 #### A gameState list object.
@@ -36,11 +37,15 @@ library(maps)
 
 #Create an environment.  
 #This will hide the gameState variable.
-myE = new.env()
+myE = new.env() # Clunky?
 
 #Start game functions
-startGame = function(){
-
+startGame = function(roomID = 0){
+	print("Welcome to the Statistical Teaching and Proficiency System (STAPS).")
+	if(roomID == 0){
+		cat(paste("You are in a hallway with two doors. They are labeled LLNgame and CLTgame.\n Which of the two doors do you enter?"))
+		roomID = readline(prompt = "Door: ")
+	}	
 	#Ignore this
 	# myGS =  mget("gameState", envir = myE, ifnotfound = "NotFound")
 	# if(myGS$gameState == "NotFound"){
@@ -49,12 +54,12 @@ startGame = function(){
 	# }
 	
 	#Use InitInterpreter to initialize the gameState
-	gameState = initInterpreter()
+	gameState = initInterpreter(roomID)
 	assign("gameState",gameState, myE)
 }
 
-startgame = function(){
-	startGame()
+startgame = function(roomID = 0){
+	startGame(roomID)
 }
 
 #Checks to see if a game is loaded or not.
@@ -73,7 +78,7 @@ startgame = function(){
 #}
 
 endGame = function(){
-    rm(myE)
+    #rm(myE)
     dev.off()
 }
 
