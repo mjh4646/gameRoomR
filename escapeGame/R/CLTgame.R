@@ -10,7 +10,8 @@ updateInterpreter = function(gameState){
 	#The init is helpful to determine if we have initialized a given location
 	if(is.null(gameState$FirstRoom$Init)){
 		
-		cat("Welcome to the Statistical Testing and Proficiency System (STAPS).\nPlease enter your student ID and press enter.\n")
+		# ID entry
+		cat("Welcome to the Statistical Teaching and Proficiency System (STAPS).\nPlease enter your student ID and press enter.\n")
 		gameState$SID = as.numeric(readline(prompt = "Student ID: "))
 		cat("You are in a small room. Your task is to escape.\nTo view the room, type look().\nTo look at an object, type look(\"OBJECT NAME\")\nwhere \"OBJECT NAME\" is replaced with the name of the object.\nTo use an object, type use(\"OBJECT NAME\").\n")
 		
@@ -95,7 +96,7 @@ getLook = function(gameState, obj){
 	}
 	
 	else if(obj == "doorFirstRoom"){
-		cat("This is the door to the outside world.  It is currently closed.\nA panel reads 'TO OPEN, DISPLAY AN (APPROXIMATELY) NORMAL DISTRIBUTION ON THE SCREEN.'\n")
+		cat("This is the door to the outside world.  It is currently closed.\nA panel reads:\n 'TO OPEN, DISPLAY AN (APPROXIMATELY) NORMAL DISTRIBUTION ON THE SCREEN.'\n")
 	}	
 	else if(obj == "switchFirstRoom"){
         tempState = get("gameState", myE)
