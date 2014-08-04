@@ -11,7 +11,7 @@ updateInterpreter = function(gameState){
 	if(is.null(gameState$FirstRoom$Init)){
 		
 		# ID entry
-		cat("Welcome to the Statistical Testing and Proficiency System (STAPS).\nPlease enter your student ID and press enter.\n")
+		cat("Welcome to the Statistical Teaching and Proficiency System (STAPS).\nPlease enter your student ID and press enter.\n")
 		gameState$SID = as.numeric(readline(prompt = "Student ID: "))
 		cat("You are in a small room. Your task is to escape.\nTo view the room, type look().\nTo look at an object, type look(\"OBJECT NAME\")\nwhere \"OBJECT NAME\" is replaced with the name of the object.\nTo use an object, type use(\"OBJECT NAME\").\n")
 		
