@@ -3,7 +3,15 @@
 #### Last modified 8/4/14
 
 #### Stuff to think about urgently: CLT win condition (too easy to end after 5 attempts)
-#### go()
+
+go = function(roomID){
+    tempState = get("gameState", myE)
+	if(tempState$Location == "Hallway"){
+		startGame(roomID)	
+	} else {
+	print("You can't go there - you're stuck in this room, remember?")
+	}
+}
 
 #### This function will eventually be used to 
 #### Update which location we are in.
@@ -30,12 +38,21 @@ initInterpreter = function(roomID){
 	
 	#Initialize gameState
 	gameState = list()
-	if(roomID == "LLNgame"){
+	roomID = tolower(roomID)
+	if(roomID == "llngame"){
 		gameState$Location = "LLNRoom"
-	} else if(roomID == "CLTgame"){
+	} else if(roomID == "llnroom"){
+		gameState$Location = "LLNRoom"
+	} else if(roomID == "lln"){
+		gameState$Location = "LLNRoom"
+	} else if(roomID == "cltgame"){
+		gameState$Location = "CLTRoom"
+	} else if(roomID == "cltroom"){
+		gameState$Location = "CLTRoom"
+	} else if(roomID == "clt"){
 		gameState$Location = "CLTRoom"
 	} else {
-		print("No such game. Please type startGame("LLNgame") or startGame("CLTgame").")
+		cat(paste("No such game. Please type startGame(\"LLNgame\") or startGame(\"CLTgame\").\n"))
 	}
 	gameState$Inventory = NULL
 	gameState$Data = c()
@@ -170,7 +187,7 @@ getLook = function(gameState, obj){
 	}
 
 	else if(obj == "buttonCLTRoom"){
-		cat("There is a panel with one button on it.\nAn inscription reads: 'Press to generate a sample from an exponential distribution.'\nTo press the button, type use(\"Button\").\n")
+		cat("There is a panel with one button on it.\nAn inscription reads:\n'Press to generate a sample from an exponential distribution.'\nTo press the button, type use(\"Button\").\n")
 	}
 	
 	else if(obj == "doorCLTRoom"){
@@ -185,8 +202,7 @@ getLook = function(gameState, obj){
             cat("There is a switch with two settings: Data and Means.\nIt is currently set to Means.\nTo flick the switch, type use(\"Switch\").\n")
         }
 	} else if(obj == "Hallway"){
-		print("You are in a hallway with two doors. They are labeled LLNgame and CLTgame.")
-	}
+		print("You are in a hallway with two doors. They are labeled LLNRoom and CLTRoom.")
 	} else{
 		print(paste("The object ", obj, " cannot be viewed while in this room."))
 	}
@@ -215,26 +231,30 @@ getObjName = function(gameState,obj){
 # toss: for LLN game only
 toss = function(coins){
     tempState = get("gameState", myE)
-    if(tempState$Switch == FALSE){
-        tempState$Coins = coins
-        tempState$Data = rbinom(coins,1,0.5)
-		tempState$Means = mean(tempState$Data)
-        print(paste("You push the button.",coins,"coins are tossed, of which",sum(tempState$Data),"are heads."))
-    } else if(tempState$Switch == TRUE){
-        tempState$Coins = coins
-		tempState$Data = rbinom(1,coins,0.5)
-        tempState$Means = rbinom(1000,coins,0.5)/coins
-        cat(paste("You push the button. One thousand sets of",coins,"coins are tossed.\n The number of heads ranges from",min(tempState$Means*coins),"to",max(tempState$Means*coins),".\n"))
-    }
-    assign("gameState",tempState,myE)
-    look("Screen")
+	if(tempState$Location == "LLNRoom"){
+		if(tempState$Switch == FALSE){
+			tempState$Coins = coins
+			tempState$Data = rbinom(coins,1,0.5)
+			tempState$Means = mean(tempState$Data)
+			print(paste("You push the button.",coins,"coins are tossed, of which",sum(tempState$Data),"are heads."))
+		} else if(tempState$Switch == TRUE){
+			tempState$Coins = coins
+			tempState$Data = rbinom(1,coins,0.5)
+			tempState$Means = rbinom(1000,coins,0.5)/coins
+			cat(paste("You push the button. One thousand sets of",coins,"coins are tossed.\n The number of heads ranges from",min(tempState$Means*coins),"to",max(tempState$Means*coins),".\n"))
+		}
+		assign("gameState",tempState,myE)
+		look("Screen")
+	} else {
+		print("There are no coins here to toss.")
+	}
 }
 
 useInterpreter = function(gameState,obj,rep=1){
 	myObj = getObjName(gameState,obj)
     tempState = get("gameState", myE)
 	if(myObj == "buttonLLNRoom"){
-        coins = readline("How many coins would you like to toss at a time?\n")
+        coins = as.numeric(readline("How many coins would you like to toss at a time?\n"))
         toss(coins)
 	} else if(myObj == "switchLLNRoom"){
         if(tempState$Switch == FALSE){
@@ -257,6 +277,7 @@ useInterpreter = function(gameState,obj,rep=1){
                 plot(0:1,0:1,type="n",xlab="",ylab="",xaxt="n",yaxt="n")
                 text(0.5,0.5,"You win!",cex=4)
 				tempState$Location = "Hallway"
+				
 				assign("gameState",tempState,myE)
             } else {
                 cat(paste(100*prop,"percent of the dots are within the dotted lines.\n You need 95%. Keep trying!\n"))
@@ -290,8 +311,11 @@ useInterpreter = function(gameState,obj,rep=1){
     } else if(myObj == "doorCLTRoom"){
         if(tempState$Switch==FALSE){
             print("Looks like an exponential distribution to me.")
-        } else if(length(tempState$Means) < 5){
+        } else if(length(tempState$Means) <= 5){
             print("The door doesn't open. You're going to need a lot more samples.")
+			if(length(tempState$Means) >= 5){
+				cat(paste("Psst... Here's a secret. Type use(\"Button\", 10) to use the button ten times.\n"))
+			}
         } else if(shapiro.test(tempState$Means)$stat > 0.95){
             cat(paste("The distribution of sample means is approximately normal.\n The door opens and you escape into the outside world. You win! (trumpets)\n"))
             plot(0:1,0:1,type="n",xlab="",ylab="",xaxt="n",yaxt="n")
@@ -302,7 +326,7 @@ useInterpreter = function(gameState,obj,rep=1){
 			assign("gameState",tempState,myE)
         } else {
             print("Hmmm, can't be sure it's normal yet. Try taking a few more samples.")
-			if(length(tempState$Means) >= 10){
+			if(length(tempState$Means) >= 5){
 				cat(paste("Psst... Here's a secret. Type use(\"Button\", 10) to use the button ten times.\n"))
 			}
         }
