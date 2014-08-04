@@ -43,7 +43,7 @@ myE = new.env() # Clunky?
 startGame = function(roomID = 0){
 	print("Welcome to the Statistical Teaching and Proficiency System (STAPS).")
 	if(roomID == 0){
-		cat(paste("You are in a hallway with two doors. They are labeled LLNgame and CLTgame.\n Which of the two doors do you enter?"))
+		cat(paste("You are in a hallway with two doors. They are labeled LLNgame and CLTgame.\n Which of the two doors do you enter?\n"))
 		roomID = readline(prompt = "Door: ")
 	}	
 	#Ignore this
