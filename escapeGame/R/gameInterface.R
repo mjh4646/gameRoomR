@@ -37,7 +37,7 @@ library(maps)
 
 #Create an environment.  
 #This will hide the gameState variable.
-myE = new.env() # Clunky?
+myE = new.env() #Clunky?
 
 #Start game functions
 startGame = function(roomID = 0){
@@ -82,7 +82,7 @@ endGame = function(){
     dev.off()
 }
 
-endgame = function()
+endgame = function(){
 	endGame()
 }
 
